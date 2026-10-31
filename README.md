@@ -5,9 +5,8 @@
 Страница интерфейса открывается на корне: `http://192.168.0.104/` — любой неизвестный путь тоже отдаёт её.
 
 ---
-![enter image description here](hardware\\esp32sd\\esp32sd-B_Cu.svg)
-![enter image description here](hardware\\esp32sd\\esp32sd-F_Cu.svg)
-
+![enter image description here](hardware/esp32sd/esp32sd-B_Cu.svg)
+![enter image description here](hardware/esp32sd/esp32sd-F_Cu.svg)
 ## Общие правила
 
 ### Параметр `card`
