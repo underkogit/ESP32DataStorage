@@ -173,9 +173,11 @@ void handleApiFiles() {
     String chunk;
     chunk.reserve(900);
     bool firstItem = true;
+    long items = 0;
     struct dirent* e;
     while ((e = readdir(d)) != nullptr) {
         if (isDotName(e->d_name)) continue;
+        items++;
 
         bool isDir;
         if (e->d_type == DT_DIR) isDir = true;
@@ -195,7 +197,8 @@ void handleApiFiles() {
 
     chunk += "]}";
     server->sendContent(chunk);
-    Serial.printf("[API] /api/files dir=%s listed in %u ms\n", dirPath.c_str(), (unsigned)(millis() - t0));
+    logging::put("[API] /api/files card=" + String(card) + " dir=" + dirPath +
+                 " → " + String(items) + " items · " + String((unsigned)(millis() - t0)) + " ms");
 }
 
 // ---- /api/sizes: progressive size / children-count fill-up ----
@@ -224,6 +227,7 @@ void handleApiSizes() {
     if (start < 0) start = 0;
     if (count < 1 || count > 64) count = 24;
 
+    uint32_t t0 = millis();
     DIR* d = opendir(fsPath(s, dirPath).c_str());
     if (!d) { sendError(404, "dir not found"); return; }
 
@@ -274,16 +278,21 @@ void handleApiSizes() {
 
     chunk += "],\"more\":" + String(more) + "}";
     server->sendContent(chunk);
+    logging::put("[API] /api/sizes card=" + String(card) + " dir=" + dirPath +
+                 " start=" + String(start) + " → " + String(sent) + " items, more " + String(more) +
+                 " · " + String((unsigned)(millis() - t0)) + " ms");
 }
 
 void handleApiCardsList() {
     String json = "{\"cards\":[";
+    int readyCount = 0;
     for (int i = 0; i < storage::count(); i++) {
         Storage* s = storage::get(i);
         if (i) json += ',';
         json += "{\"index\":" + String(i) + ",\"name\":\"" + jsonEscape(s->def().name) + "\",\"ready\":";
         json += s->ready() ? "true" : "false";
         if (s->ready()) {
+            readyCount++;
             uint64_t tot = s->fs().totalBytes();
             uint64_t used = s->fs().usedBytes();
             json += ",\"totalBytes\":" + String((uint32_t)tot);
@@ -294,8 +303,7 @@ void handleApiCardsList() {
         json += "}";
     }
     json += "]}";
-    Serial.println("[API] /api/cards");
-    Serial.flush();
+    logging::put("[API] /api/cards · " + String(storage::count()) + " карт, готово " + String(readyCount));
     server->send(200, "application/json", json);
 }
 
@@ -336,8 +344,8 @@ void handleApiFileInfo() {
         ",\"usedBytes\":" + String((uint32_t)used) +
         ",\"freeBytes\":" + String((uint32_t)freeb) +
         "}";
-    Serial.println("[API] /api/file/info");
-    Serial.flush();
+    logging::put("[API] /api/file/info card=" + String(card) + " path=" + path +
+                 (isDir ? String(" (dir, ") + n_children + " об.)" : String(" (file, ") + String(st_size) + " Б)"));
     server->send(200, "application/json", json);
 }
 
@@ -373,8 +381,8 @@ void handleApiAppendLine() {
 
     if (w == 0 || w < body.length()) { sendError(500, "short write"); return; }
 
-    Serial.printf("[APPEND] %s: +%u bytes (file size %u)\n", path.c_str(), (unsigned)body.length(), (unsigned)sizeAfter);
-    Serial.flush();
+    logging::put("[APPEND] card=" + String(card) + " " + path + " +" + String((unsigned)w) +
+                 " bytes (size " + String(sizeAfter) + ")");
     server->send(200, "application/json",
         "{\"ok\":true,\"path\":\"" + jsonEscape(path) + "\",\"bytes\":" + String((uint32_t)w) +
         ",\"size\":" + String(sizeAfter) + "}");
@@ -402,8 +410,7 @@ void handleApiDelete() {
         sendError(500, isDir ? "folder not empty (or delete failed)" : "delete failed");
         return;
     }
-    Serial.printf("[DELETE] %s%s\n", path.c_str(), isDir ? "/ (dir)" : "");
-    Serial.flush();
+    logging::put("[DELETE] card=" + String(card) + " " + path + (isDir ? " (dir)" : " (file)"));
     server->send(200, "application/json",
         "{\"ok\":true,\"path\":\"" + jsonEscape(path) + "\",\"" + (isDir ? "type\":\"dir\"" : "type\":\"file\"") + "}");
 }
@@ -433,11 +440,11 @@ void handleDownload() {
 
     uint32_t t0 = millis();
     size_t total = (size_t)f.size();
+    logging::put("[DL] start card=" + String(card) + " " + path + " (" + String((uint32_t)total) + " bytes)");
     size_t sent = server->streamFile(f, "application/octet-stream");
     f.close();
-    Serial.printf("[DL] %s: sent %u/%u bytes in %u ms\n", name.c_str(),
-                  (unsigned)sent, (unsigned)total, (unsigned)(millis() - t0));
-    Serial.flush();
+    logging::put("[DL] done card=" + String(card) + " " + name + " sent " + String((unsigned)sent) +
+                 "/" + String((unsigned)total) + " bytes · " + String((unsigned)(millis() - t0)) + " ms");
 }
 
 void handleUploadData() {
@@ -450,9 +457,7 @@ void handleUploadData() {
         if (!s || !s->ready()) { uploadCard = -2; return; }
 
         String name = "/" + u.filename;
-        Serial.printf("[UPLOAD] %s: start %s\n", s->def().name, name.c_str());
-        Serial.flush();
-        logging::put(String("[UPLOAD] ") + s->def().name + ": start " + name);
+        logging::put(String("[UPLOAD] START card=") + card + " " + name);
 
         uploadCard = card;
         uploadFile = s->fs().open(name, FILE_WRITE);
@@ -467,12 +472,10 @@ void handleUploadData() {
     } else if (u.status == UPLOAD_FILE_END) {
         uint32_t sz = 0;
         if (uploadFile) { sz = uploadFile.size(); uploadFile.close(); }
-        Serial.printf("[UPLOAD] done, %u bytes\n", (unsigned)sz);
-        Serial.flush();
+        logging::put("[UPLOAD] done, " + String((unsigned)sz) + " bytes");
         uploadCard = -1;
     } else if (u.status == UPLOAD_FILE_ABORTED) {
-        Serial.println("[UPLOAD] aborted");
-        Serial.flush();
+        logging::put("[UPLOAD] aborted");
         if (uploadFile) { uploadFile.close(); }
         uploadCard = -1;
     }
@@ -504,8 +507,7 @@ void begin() {
     s.on("/upload", HTTP_POST, handleUploadEnd, handleUploadData);
     s.onNotFound(handleRoot);
     s.begin();
-    Serial.println("[WEB] HTTP server started on port 80");
-    Serial.flush();
+    logging::put("[WEB] HTTP server started on port 80");
 }
 
 void handle() {

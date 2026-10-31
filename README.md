@@ -287,6 +287,29 @@ curl.exe "http://192.168.0.104/api/delete?card=0&path=/tmp_folder"
 
 ---
 
+## 9. Логи самого ESP — `/logs/host.log` на карте из config
+
+ESP32 сам пишет журнал всех принятых/отправленных HTTP-запросов и событий (монтирование карт, WiFi, append/delete/download/upload, ошибки). Строки однотипны:
+
+```
+[+12.3s] [API] /api/files card=0 dir=/ → 8 items · 41 ms
+[+45.8s] [APPEND] card=0 /logs/esp2.log +17 bytes (size 1024)
+[+51.2s] [DL] start card=0 /IMG_0001.jpg (60148 bytes)
+```
+
+- Метка `[+сек.s]` — время работы ESP (uptime). Файл-host выбирается **в `src/config.cpp`**:
+  ```cpp
+  const int    LOG_CARD_INDEX     = 0;          // ← карта, куда пишутся логи (индекс из /api/cards)
+  const char*  LOG_DIR            = "/logs";
+  const char*  LOG_FILE           = "host.log";
+  const size_t LOG_MAX_FILE_BYTES = 256 * 1024; // ротация при превышении
+  ```
+- При превышении `LOG_MAX_FILE_BYTES` текущий `host.log` переезжает в `host.log.1` (хранится одна прошлая копия).
+- Пока карта логов не готова — строки уходят в Serial и держатся в RAM-кольце (32 последние).
+- `/api/file/info` и оболочка браузера (страница `/`) в журнал не пишутся — там шум.
+
+---
+
 ## Сводка эндпоинтов
 
 | Метод | Путь | Назначение |
@@ -300,3 +323,4 @@ curl.exe "http://192.168.0.104/api/delete?card=0&path=/tmp_folder"
 | POST | `/upload?card` | загрузить файл (multipart, поле `file`) — в корень карты |
 | POST | `/api/append?card&path` | дозаписать строку(-и) лога (text/plain) |
 | GET | `/api/delete?card&path` | удалить файл / пустую папку |
+| — | SD `/logs/host.log` | журнал запросов ESP (карта/лимиты — в `config.cpp`, `LOG_*`) |

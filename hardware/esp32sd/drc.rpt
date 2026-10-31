@@ -1,0 +1,180 @@
+** Drc report for esp32sd.kicad_pcb **
+** Created on 2026-10-30T23:53:00 **
+** Report includes: Errors, Warnings, Exclusions **
+
+** Found 40 DRC violations **
+[lib_footprint_mismatch]: Посад. место 'TerminalBlock_MaiXu_MX126-5.0-02P_1x02_P5.00mm' не соответствует копии в библиотеке 'TerminalBlock'
+    Local override; warning
+    @(54.4750 mm, 105.9750 mm): Footprint J3
+[lib_footprint_mismatch]: Посад. место 'ESP32_30pin' не соответствует копии в библиотеке 'ESP32_Footprints'
+    Local override; warning
+    @(76.0775 mm, 89.0052 mm): Footprint U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(54.9750 mm, 99.1630 mm): Segment of J3 on F.Silkscreen
+    @(54.4750 mm, 100.9750 mm): PTH pad 2 [GND] of J3
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(56.2750 mm, 100.4320 mm): Segment of J3 on F.Silkscreen
+    @(54.4750 mm, 100.9750 mm): PTH pad 2 [GND] of J3
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(54.9750 mm, 104.0950 mm): Segment of J3 on F.Silkscreen
+    @(54.4750 mm, 105.9750 mm): PTH pad 1 [VIN] of J3
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(54.9750 mm, 104.0950 mm): Segment of J3 on F.Silkscreen
+    @(54.4750 mm, 100.9750 mm): PTH pad 2 [GND] of J3
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(54.9750 mm, 109.0950 mm): Segment of J3 on F.Silkscreen
+    @(54.4750 mm, 105.9750 mm): PTH pad 1 [VIN] of J3
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(56.2750 mm, 104.0950 mm): Segment of J3 on F.Silkscreen
+    @(54.4750 mm, 100.9750 mm): PTH pad 2 [GND] of J3
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(53.9750 mm, 99.1630 mm): Segment of J3 on F.Silkscreen
+    @(54.4750 mm, 100.9750 mm): PTH pad 2 [GND] of J3
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(53.9750 mm, 104.0950 mm): Segment of J3 on F.Silkscreen
+    @(54.4750 mm, 105.9750 mm): PTH pad 1 [VIN] of J3
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(53.9750 mm, 104.0950 mm): Segment of J3 on F.Silkscreen
+    @(54.4750 mm, 100.9750 mm): PTH pad 2 [GND] of J3
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(53.9750 mm, 109.0950 mm): Segment of J3 on F.Silkscreen
+    @(54.4750 mm, 105.9750 mm): PTH pad 1 [VIN] of J3
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(65.0775 mm, 104.0052 mm): Footprint text of U1 (GND)
+    @(64.1500 mm, 103.4850 mm): PTH pad 2 [GND] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(65.0775 mm, 99.0052 mm): Footprint text of U1 (GPIO12)
+    @(64.1500 mm, 98.4050 mm): PTH pad 4 [unconnected-(U1-GPIO12-Pad4)] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(65.0775 mm, 101.5052 mm): Footprint text of U1 (GPIO13)
+    @(64.1500 mm, 100.9450 mm): PTH pad 3 [unconnected-(U1-GPIO13-Pad3)] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(65.0775 mm, 84.0052 mm): Footprint text of U1 (GPIO32)
+    @(64.1500 mm, 83.1650 mm): PTH pad 10 [unconnected-(U1-GPIO32-Pad10)] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(65.0775 mm, 86.5052 mm): Footprint text of U1 (GPIO33)
+    @(64.1500 mm, 85.7050 mm): PTH pad 9 [unconnected-(U1-GPIO33-Pad9)] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(65.0775 mm, 81.5052 mm): Footprint text of U1 (GPIO35)
+    @(64.1500 mm, 80.6250 mm): PTH pad 11 [unconnected-(U1-GPIO35-Pad11)] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(65.0775 mm, 89.0052 mm): Footprint text of U1 (GPIO25)
+    @(64.1500 mm, 88.2450 mm): PTH pad 8 [unconnected-(U1-GPIO25-Pad8)] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(65.0775 mm, 91.5052 mm): Footprint text of U1 (GPIO26)
+    @(64.1500 mm, 90.7850 mm): PTH pad 7 [unconnected-(U1-GPIO26-Pad7)] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(65.0775 mm, 94.0052 mm): Footprint text of U1 (GPIO27)
+    @(64.1500 mm, 93.3250 mm): PTH pad 6 [unconnected-(U1-GPIO27-Pad6)] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(65.0775 mm, 96.5052 mm): Footprint text of U1 (GPIO14)
+    @(64.1500 mm, 95.8650 mm): PTH pad 5 [unconnected-(U1-GPIO14-Pad5)] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(83.5775 mm, 89.0052 mm): Footprint text of U1 (GPIO5)
+    @(89.5500 mm, 88.2450 mm): PTH pad 23 [CS2] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(65.0775 mm, 76.5052 mm): Footprint text of U1 (GPIO39)
+    @(64.1500 mm, 75.5450 mm): PTH pad 13 [unconnected-(U1-GPIO39-Pad13)] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(65.0775 mm, 79.0052 mm): Footprint text of U1 (GPIO34)
+    @(64.1500 mm, 78.0850 mm): PTH pad 12 [unconnected-(U1-GPIO34-Pad12)] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(65.0775 mm, 71.5052 mm): Footprint text of U1 (EN)
+    @(64.1500 mm, 70.4650 mm): PTH pad 15 [unconnected-(U1-EN-Pad15)] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(65.0775 mm, 74.0052 mm): Footprint text of U1 (GPIO36)
+    @(64.1500 mm, 73.0050 mm): PTH pad 14 [unconnected-(U1-GPIO36-Pad14)] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(82.5775 mm, 71.0052 mm): Footprint text of U1 (GPIO23)
+    @(89.5500 mm, 70.4650 mm): PTH pad 30 [MOSI] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(82.5775 mm, 73.5052 mm): Footprint text of U1 (GPIO22)
+    @(89.5500 mm, 73.0050 mm): PTH pad 29 [unconnected-(U1-GPIO22-Pad29)] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(82.5775 mm, 101.5052 mm): Footprint text of U1 (GPIO15)
+    @(89.5500 mm, 100.9450 mm): PTH pad 18 [unconnected-(U1-GPIO15-Pad18)] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(83.5775 mm, 99.0052 mm): Footprint text of U1 (GPIO2)
+    @(89.5500 mm, 98.4050 mm): PTH pad 19 [unconnected-(U1-GPIO2-Pad19)] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(85.0775 mm, 104.0052 mm): Footprint text of U1 (GND)
+    @(89.5500 mm, 103.4850 mm): PTH pad 17 [GND] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(85.0775 mm, 106.5052 mm): Footprint text of U1 (3.3v)
+    @(89.5500 mm, 106.0250 mm): PTH pad 16 [3v3] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(82.5775 mm, 84.0052 mm): Footprint text of U1 (GPIO19)
+    @(89.5500 mm, 83.1650 mm): PTH pad 25 [MISO] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(82.5775 mm, 86.5052 mm): Footprint text of U1 (GPIO18)
+    @(89.5500 mm, 85.7050 mm): PTH pad 24 [CLK] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(83.5775 mm, 76.0052 mm): Footprint text of U1 (GPIO1)
+    @(89.5500 mm, 75.5450 mm): PTH pad 28 [unconnected-(U1-GPIO1-Pad28)] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(83.5775 mm, 79.0052 mm): Footprint text of U1 (GPIO3)
+    @(89.5500 mm, 78.0850 mm): PTH pad 27 [unconnected-(U1-GPIO3-Pad27)] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(82.5775 mm, 91.5052 mm): Footprint text of U1 (GPIO17)
+    @(89.5500 mm, 90.7850 mm): PTH pad 22 [unconnected-(U1-GPIO17-Pad22)] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(82.5775 mm, 94.0052 mm): Footprint text of U1 (GPIO16)
+    @(89.5500 mm, 93.3250 mm): PTH pad 21 [unconnected-(U1-GPIO16-Pad21)] of U1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(83.5775 mm, 96.5052 mm): Footprint text of U1 (GPIO4)
+    @(89.5500 mm, 95.8650 mm): PTH pad 20 [CS1] of U1
+
+** Found 1 unconnected pads **
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(92.7800 mm, 103.4950 mm): Track [GND] on F.Cu, length 3.2350 mm
+    @(56.9975 mm, 103.4850 mm): Track [GND] on F.Cu, length 7.1650 mm
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Footprint has no courtyard defined
+    - Track endpoint not centered on via
+    - Tuning profile track geometries
+    - Footprint doesn't match symbol's footprint filters
+    - Footprint component type doesn't match footprint pads
+
+** End of Report **

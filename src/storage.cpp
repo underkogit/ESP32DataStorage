@@ -15,20 +15,14 @@ bool Storage::begin() {
     if (_ready) return true;
     if (!_spi) _spi = &SPI;
 
-    Serial.printf("[STORAGE] %s: initializing (CS %u)...\n", _def.name, (unsigned)_def.cs);
-    Serial.flush();
     logging::put(String("[STORAGE] ") + _def.name + ": initializing (CS " + String((unsigned)_def.cs) + ")");
     delay(250);
 
     if (!_sd->begin(_def.cs, *_spi, 4000000U, _mount)) {
-        Serial.printf("[STORAGE] %s: init failed\n", _def.name);
-        Serial.flush();
         logging::put(String("[STORAGE] ") + _def.name + ": SDFS.begin failed (mount " + _mount + ")");
         return false;
     }
     _ready = true;
-    Serial.printf("[STORAGE] %s: mounted\n", _def.name);
-    Serial.flush();
     logging::put(String("[STORAGE] ") + _def.name + ": mounted (" + _mount + ")");
     return true;
 }
@@ -50,7 +44,6 @@ bool Storage::check() {
     }
     return true;
 }
-
 void Storage::poll() {
     if (_ready) check();
 }
@@ -67,8 +60,7 @@ void setup() {
         s->begin();
         cards.push_back(s);
     }
-    Serial.println("[STORAGE] initialized");
-    Serial.flush();
+    logging::put("[STORAGE] initialized (" + String((int)cards.size()) + " cards)");
 }
 
 void poll() {
@@ -80,8 +72,7 @@ void poll() {
         bool wasReady = s->ready();
         s->poll();
         if (wasReady && !s->ready()) {
-            Serial.printf("[STORAGE] %s: card removed\n", s->def().name);
-            Serial.flush();
+            logging::put(String("[STORAGE] ") + s->def().name + ": unmounted by poll");
         }
     }
 }

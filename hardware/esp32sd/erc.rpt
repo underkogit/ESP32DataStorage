@@ -1,0 +1,33 @@
+ERC report (2026-10-30T23:52:58, Encoding UTF8)
+Report includes: Errors, Warnings, Exclusions
+
+***** Sheet /
+[power_pin_not_driven]: Input Power pin not driven by any Output Power pins
+    ; error
+    @(78.74 mm, 67.31 mm): Symbol U1 Pin 17 [GND, Power input, Line]
+[power_pin_not_driven]: Input Power pin not driven by any Output Power pins
+    ; error
+    @(118.11 mm, 31.75 mm): Symbol #PWR08 Pin 1 [Power input, Line]
+[power_pin_not_driven]: Input Power pin not driven by any Output Power pins
+    ; error
+    @(153.67 mm, 29.21 mm): Symbol #PWR01 Pin 1 [Power input, Line]
+[power_pin_not_driven]: Input Power pin not driven by any Output Power pins
+    ; error
+    @(153.67 mm, 31.75 mm): Symbol #PWR02 Pin 1 [Power input, Line]
+[power_pin_not_driven]: Input Power pin not driven by any Output Power pins
+    ; error
+    @(153.67 mm, 34.29 mm): Symbol #PWR03 Pin 1 [Power input, Line]
+[power_pin_not_driven]: Input Power pin not driven by any Output Power pins
+    ; error
+    @(153.67 mm, 36.83 mm): Symbol #PWR04 Pin 1 [Power input, Line]
+[power_pin_not_driven]: Input Power pin not driven by any Output Power pins
+    ; error
+    @(153.67 mm, 39.37 mm): Symbol #PWR05 Pin 1 [Power input, Line]
+
+ ** ERC messages: 7  Errors 7  Warnings 0
+
+ ** Ignored checks:
+    - Global label only appears once in the schematic
+    - Four connection points are joined together
+    - SPICE model issue
+    - Assigned footprint doesn't match footprint filters

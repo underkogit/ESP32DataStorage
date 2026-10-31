@@ -1,5 +1,10 @@
 #pragma once
 
+// Дизайн в стиле «тёмный минимал» (как референс): sticky-топбар со счётчиком,
+// аккордеон информации о карте, список файлов без лишних рамок,
+// нижняя панель-«композер» (карта / загрузка / статус / круглая кнопка).
+// Вся динамика (прогрессивные размеры, скачивание, загрузка, удаление) прежняя.
+
 static const char INDEX_HTML[] PROGMEM = R"html(<!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -7,75 +12,158 @@ static const char INDEX_HTML[] PROGMEM = R"html(<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ESP32 Files</title>
 <style>
-  :root { --bg:#12141c; --card:#1c2030; --line:#2c3247; --acc:#4f8cff; --txt:#e6e9f2; --dim:#8b93ab; }
+  :root {
+    --bg:#0b0c0e; --panel:#131519; --panel2:#181b20; --line:#23262d;
+    --txt:#d8dbe2; --dim:#8a90a0; --acc:#5b9dff; --gold:#e5c07b;
+    --ok:#7ee08a; --bad:#ff6b6b;
+  }
   * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--txt); padding:20px; }
-  .wrap { max-width:900px; margin:0 auto; }
-  h1 { font-size:1.4rem; margin-bottom:4px; }
-  .sub { color:var(--dim); font-size:.85rem; margin-bottom:16px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:16px; }
-  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-  button, .btn, select { background:var(--acc); color:#fff; border:none; border-radius:8px;
-    padding:9px 14px; font-size:.9rem; cursor:pointer; text-decoration:none; display:inline-block; }
-  button.sec { background:#2a3149; }
-  #upIn { display:none; }
-  table { width:100%; border-collapse:collapse; font-size:.9rem; }
-  th { text-align:left; color:var(--dim); font-weight:600; padding:8px 6px; border-bottom:1px solid var(--line); }
-  td { padding:8px 6px; border-bottom:1px solid var(--line); }
-  tr:hover td { background:#232838; }
-  .name { color:var(--acc); cursor:pointer; word-break:break-all; }
-  .dir .nm { color:#ffd35c; font-weight:600; }
+  body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--txt);
+         padding-bottom:96px; }
+  .mono { font-family:ui-monospace,'Cascadia Mono',Consolas,monospace; }
   .dim { color:var(--dim); }
-  .tag { display:inline-block; background:#2a3149; color:var(--dim); border-radius:6px; padding:2px 7px; font-size:.75rem; }
-  .ok { color:#7ee08a; } .bad { color:#ff7a7a; }
-  .pending { opacity:.55; }
-  #bar { height:6px; background:var(--line); border-radius:3px; overflow:hidden; margin-top:8px; }
+  .bad { color:var(--bad); }
+
+  /* ---------- верхняя панель ---------- */
+  #top { position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:10px;
+         padding:10px 16px; background:rgba(14,16,19,.94); border-bottom:1px solid var(--line);
+         backdrop-filter:blur(6px); }
+  .ttl { font-weight:700; font-size:.95rem; white-space:nowrap; }
+  #crumbs { flex:1 1 auto; min-width:0; font-size:.82rem; overflow:hidden;
+            text-overflow:ellipsis; white-space:nowrap; }
+  #crumbs span { cursor:pointer; color:var(--acc); }
+  #crumbs .sep { cursor:default; color:var(--dim); margin:0 4px; }
+  #statTop { margin-left:auto; color:var(--dim); font-size:.78rem; white-space:nowrap; }
+  .ic { width:34px; height:34px; border-radius:9px; background:var(--panel2);
+        border:1px solid var(--line); color:var(--txt); cursor:pointer; font-size:1rem; }
+  .ic:hover { background:#1f232b; }
+
+  /* ---------- аккордеон карты ---------- */
+  #cardBox { max-width:980px; margin:10px auto 0; background:var(--panel);
+             border:1px solid var(--line); border-radius:10px; font-size:.84rem; }
+  #cardBox summary { padding:9px 14px; cursor:pointer; color:var(--dim); list-style:none; }
+  #cardBox summary::-webkit-details-marker { display:none; }
+  #cardBox summary::before { content:'⌄ '; color:var(--dim); }
+  #cardBox[open] summary::before { content:'⌃ '; }
+  #cardBox summary:hover { color:var(--txt); }
+  #cardDetails { padding:0 14px 10px; color:var(--dim); line-height:1.65; }
+
+  /* ---------- панель навигации (назад/вперёд) ---------- */
+  #navBar { max-width:980px; margin:10px auto 0; display:flex; gap:8px; align-items:center;
+            background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:6px; }
+  .navB { width:44px; height:34px; font-size:1.05rem; }
+  button:disabled { opacity:.35; cursor:default; }
+  button:disabled:hover { background:var(--panel2); }
+
+  /* ---------- список файлов ---------- */
+  main { max-width:980px; margin:10px auto; background:var(--panel);
+         border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  table { width:100%; border-collapse:collapse; font-size:.88rem; }
+  th { display:none; }
+  td { padding:9px 12px; border-bottom:1px solid #171a1f; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:#15181d; }
+  .name { color:var(--acc); cursor:pointer; word-break:break-all; }
+  .dir .nm { color:var(--gold); font-weight:600; }
+  td.meta { color:var(--dim); font-size:.78rem; white-space:nowrap; }
+  td.act { text-align:right; white-space:nowrap; }   /* кнопки всегда к правому краю — колонка ровная */
+  .tag { display:inline-block; background:var(--panel2); color:var(--dim);
+         border-radius:6px; padding:2px 7px; font-size:.72rem; }
+  button { cursor:pointer; border:none; }
+  .dlB { background:var(--panel2); color:var(--txt); border-radius:8px; padding:6px 11px;
+         font-size:.78rem; border:1px solid var(--line); vertical-align:middle; }
+  .dlB:hover { background:#1f232b; }
+  .icB { width:30px; height:30px; border-radius:8px; background:var(--panel2); color:var(--txt);
+         border:1px solid var(--line); font-size:.85rem; vertical-align:middle; }
+  .icB:hover { background:#2a2320; }   /* лёгкий тёплый ховер на удалении */
+  .rowEmpty { padding:18px 12px; color:var(--dim); text-align:center; }
+
+  /* ---------- нижняя панель-композер ---------- */
+  #barholder { position:fixed; left:0; right:0; bottom:0; z-index:6;
+               background:rgba(14,16,19,.96); border-top:1px solid var(--line);
+               backdrop-filter:blur(6px); }
+  #bar { position:absolute; top:-2px; left:0; right:0; height:3px; }
   #bar div { height:100%; width:0; background:var(--acc); transition:width .2s; }
-  .crumbs span { cursor:pointer; color:var(--acc); }
-  .crumbs .sep { color:var(--dim); margin:0 4px; }
-  #stat { margin-left:auto; color:var(--dim); font-size:.8rem; }
-  select { background:#2a3149; }
-  @media(max-width:600px){ .hide-m{display:none} }
+  .bar-in { max-width:980px; margin:0 auto; display:flex; gap:10px; align-items:center;
+            padding:12px 16px; }
+  #cardSel { background:var(--panel2); color:var(--txt); border:1px solid var(--line);
+             border-radius:20px; padding:9px 14px; font-size:.85rem; cursor:pointer; outline:none; }
+  .pill { background:var(--panel2); color:var(--txt); border:1px solid var(--line);
+          border-radius:20px; padding:9px 14px; font-size:.85rem; cursor:pointer; }
+  .pill:hover { background:#1f232b; }
+  #upIn { display:none; }
+  #btxt { color:var(--acc); font-size:.78rem; }
+  #stat { margin-left:auto; color:var(--dim); font-size:.78rem; text-align:right; }
+  .circ { width:38px; height:38px; border-radius:50%; background:var(--acc); color:#fff;
+          font-size:1.1rem; box-shadow:0 2px 8px rgba(0,0,0,.4); }
+  .circ:hover { filter:brightness(1.1); }
+
+  .pill, #cardSel, .dlB { white-space:nowrap; flex-shrink:0; }
+  #stat { margin-left:auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #btxt { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  @media(max-width:640px){
+    #top { flex-wrap:wrap; }
+    #upWrap   { order:3; margin-left:auto; }
+    #top .ic  { order:4; }
+    #crumbs   { order:5; flex-basis:100%; }   /* путь — отдельной строкой, не пропадает */
+    #statTop { display:none; }
+    .hide-m { display:none; }
+    .pill, #cardSel { padding:8px 10px; font-size:.78rem; }
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>&#128190; ESP32 &mdash; Файловая система</h1>
-  <div class="sub">API: <code>/api/cards</code>, <code>/api/files</code>, <code>/api/sizes</code>, <code>/api/append</code>, <code>/api/delete</code>, <code>/api/file/info</code>, <code>/download</code>, <code>/upload</code></div>
 
-  <div class="card">
-    <div class="row">
-      <select id="cardSel" onchange="changeCard(this.value)"></select>
-      <label class="btn" style="position:relative">Загрузить файл
-        <input id="upIn" type="file" multiple>
-      </label>
-      <button class="sec" onclick="refresh()">&#8635; Обновить</button>
-      <span id="stat">…</span>
-    </div>
-    <div class="crumbs" id="crumbs" style="margin-top:12px"></div>
-    <div id="bar"><div></div></div>
-    <span id="btxt" class="dim"></span>
-  </div>
+<header id="top">
+  <div class="logo">💾</div>
+  <div class="ttl">ESP32 Files</div>
+  <div id="crumbs"></div>
+  <span id="statTop" class="mono"></span>
+  <label class="pill" id="upWrap" style="position:relative">⬆ Загрузить
+    <input id="upIn" type="file" multiple>
+  </label>
+  <button class="ic" onclick="refresh()" title="Обновить">⟳</button>
+</header>
 
-  <div class="card">
-    <table>
-      <thead><tr><th>&#128193; Путь</th><th class="hide-m">Размер</th><th class="hide-m">Инфо</th><th>Действия</th></tr></thead>
-      <tbody id="list"><tr><td colspan="4" class="dim">Загрузка…</td></tr></tbody>
-    </table>
-  </div>
+<details id="cardBox">
+  <summary id="cardSummary">Карта…</summary>
+  <div id="cardDetails" class="mono"></div>
+</details>
+
+<div id="navBar">
+  <button class="ic navB" id="btnBack" title="Назад (Alt+←)" onclick="hGo(-1)" disabled>←</button>
+  <button class="ic navB" id="btnFwd" title="Вперёд (Alt+→)" onclick="hGo(1)" disabled>→</button>
 </div>
 
+<main>
+  <table>
+    <thead><tr><th>Путь</th><th>Размер</th><th>Инфо</th><th></th></tr></thead>
+    <tbody id="list"><tr><td colspan="4" class="rowEmpty dim">Загрузка…</td></tr></tbody>
+  </table>
+</main>
+
+<footer id="barholder">
+  <div id="bar"><div></div></div>
+  <div class="bar-in">
+    <select id="cardSel" onchange="changeCard(this.value)"></select>
+    <button class="ic" onclick="refresh()" title="Обновить">⟳</button>
+    <span id="btxt" class="mono"></span>
+    <span id="stat" class="mono"></span>
+    <button class="circ" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Наверх">↑</button>
+  </div>
+</footer>
+
 <script>
-// Быстрая загрузка: /api/files отдаёт только имена и тип объектов (один readdir-проход,
-// никаких stat/open на каждый файл со стороны карты), поэтому список появляется мгновенно.
-// Размеры файлов и количество объектов в папках доматываются плавно, порциями по BATCH,
-// лёгкими запросами /api/sizes (это именно "плавное" получение, как и задумано).
+// Быстрая загрузка: /api/files отдаёт только имена и тип объектов (один readdir-проход),
+// размеры доматываются плавно порциями через /api/sizes (см. README, раздел API).
 let rootData = null;      // кэш содержимого корня
 let rootComplete = false; // размеры корня уже целиком получены
 let curPath = '/';
 let curItems = [];
 let card = 0;
-let loadToken = 0;        // инкрементируется при каждой смене контекста — отменяет устаревшие подгрузки
+let cardsData = [];
+let loadToken = 0;        // инкрементируется при смене контекста — отменяет устаревшие подгрузки
 const rowsByName = new Map(); // name -> {dir, sizeEl, subEl, item} для точечного обновления
 const BATCH = 24;
 
@@ -99,13 +187,16 @@ async function loadCards() {
   const sel = document.getElementById('cardSel');
   try {
     const d = await getJson('/api/cards');
-    sel.innerHTML = d.cards.map(c =>
+    cardsData = d.cards || [];
+    sel.innerHTML = cardsData.map(c =>
       `<option value="${c.index}" ${c.ready ? '' : 'disabled'}>` +
       `${escAttr(c.name)} ${c.ready ? '✓' : '(нет)'}</option>`).join('');
     if (sel.querySelector('option[value="0"]')) sel.value = 0;
   } catch (e) {
+    cardsData = [];
     sel.innerHTML = '<option>—</option>';
   }
+  renderCardBox();
 }
 
 function cardName() {
@@ -113,11 +204,61 @@ function cardName() {
   return o ? o.textContent.replace(/[✓]$/,'').trim() : '?';
 }
 
-async function loadDir(path) {
+const typeStr = t => t === 3 ? 'SDHC' : t === 2 ? 'SD' : t === 1 ? 'MMC' : t === 0 ? 'нет' : '—';
+
+function renderCardBox() {
+  const c = cardsData.find(x => x.index === card) || cardsData[0];
+  const el = document.getElementById('cardSummary');
+  const det = document.getElementById('cardDetails');
+  if (!c) { el.textContent = 'Карта: неизвестна'; det.textContent = ''; return; }
+  if (!c.ready) { el.textContent = `💾 ${c.name} — не готова`; det.textContent = ''; return; }
+  el.textContent = `💾 ${c.name} — занято ${fmt(c.usedBytes)} из ${fmt(c.totalBytes)} (${typeStr(c.type)})`;
+  det.textContent = `всего ${fmt(c.totalBytes)} · занято ${fmt(c.usedBytes)} · свободно ${fmt(c.freeBytes)} · индекс ${c.index}`;
+}
+
+// ---------- история навигации (назад/вперёд, как в браузере) ----------
+const hstack = [];
+let hpos = -1;
+
+function hUpdate() {
+  document.getElementById('btnBack').disabled = hpos <= 0;
+  document.getElementById('btnFwd').disabled = hpos >= hstack.length - 1;
+}
+function hPush(path) {
+  if (hstack[hpos] === path) return;               // то же место — не дублируем
+  hstack.splice(hpos + 1);                          // обрезаем устаревший «хвост вперёд»
+  hstack.push(path);
+  hpos = hstack.length - 1;
+  hUpdate();
+}
+function hGo(step) {                               // -1 назад, +1 вперёд
+  const target = hpos + step;
+  if (target < 0 || target >= hstack.length) return;
+  hpos = target;
+  hUpdate();
+  const to = hstack[target];
+  if (to === '/' && rootData) {                     // корень отдаём из кэша, если он жив
+    curPath = '/';
+    curItems = rootData;
+    render();
+    if (!rootComplete) fillSizes(++loadToken, '/');
+  } else {
+    loadDir(to, false);
+  }
+}
+
+document.addEventListener('keydown', ev => {
+  if (!ev.altKey) return;
+  if (ev.key === 'ArrowLeft') { ev.preventDefault(); hGo(-1); }
+  else if (ev.key === 'ArrowRight') { ev.preventDefault(); hGo(1); }
+});
+
+async function loadDir(path, push = true) {
   const token = ++loadToken;
   const list = document.getElementById('list');
-  list.innerHTML = '<tr><td colspan="4" class="dim">Загрузка…</td></tr>';
+  list.innerHTML = '<tr><td colspan="4" class="rowEmpty dim">Загрузка…</td></tr>';
   document.getElementById('stat').textContent = '';
+  document.getElementById('statTop').textContent = '';
   try {
     let d;
     for (let attempt = 0; ; attempt++) {           // 1 повтор при сбое транспорта
@@ -132,31 +273,31 @@ async function loadDir(path) {
       childCount: k.dir ? null : undefined
     }));
     if (curPath === '/') rootData = curItems;
+    if (push) hPush(curPath);
     render();
     fillSizes(token, curPath);
   } catch (e) {
     if (token !== loadToken) return;
-    list.innerHTML = '<tr><td colspan="4" class="bad">Ошибка: ' + e.message + '</td></tr>';
+    list.innerHTML = '<tr><td colspan="4" class="rowEmpty bad">Ошибка: ' + e.message + '</td></tr>';
   }
 }
 
 // Плавная (постепенная) загрузка размеров: порциями по BATCH, каждый ответ
-// раскрашивает нужные ячейки сразу — интерфейс оживает чаулами, а не блокируется.
+// раскрашивает нужные ячейки сразу.
 async function fillSizes(token, dir, start = 0) {
   if (token !== loadToken) return;
   let d;
   try {
     d = await getJson(`/api/sizes?card=${card}&dir=${encodeURIComponent(dir || '/')}&start=${start}&count=${BATCH}`);
   } catch (e) {
-    if (token === loadToken)
-      document.getElementById('stat').textContent = 'размеры недоступны: ' + e.message;
+    if (token === loadToken) document.getElementById('stat').textContent = 'размеры недоступны: ' + e.message;
     return;
   }
   if (token !== loadToken) return;
 
   for (const it of (d.items || [])) {
     const t = rowsByName.get(it.name);
-    if (!t || !t.item) continue;                    // объект исчез/папка сменилась — пропустить
+    if (!t || !t.item) continue;                    // объект исчез/папка сменилась
     if (it.err) { if (t.dir && t.subEl) t.subEl.textContent = '—'; continue; }
     if (t.dir) {
       if (typeof it.children === 'number' && it.children >= 0) {
@@ -173,7 +314,7 @@ async function fillSizes(token, dir, start = 0) {
   if (d.more != null && d.more >= 0) {
     setTimeout(() => fillSizes(token, dir, d.more), 0);   // следующая порция
   } else if (dir === '/' && token === loadToken) {
-    rootComplete = true;                            // кэш корня полностью обсчитан
+    rootComplete = true;
     updStat();
   }
 }
@@ -191,20 +332,20 @@ function render() {
   document.getElementById('crumbs').innerHTML = cr.join('');
 
   if (!curItems.length) {
-    list.innerHTML = '<tr><td colspan="4" class="dim">Папка пуста</td></tr>';
+    list.innerHTML = '<tr><td colspan="4" class="rowEmpty dim">Папка пуста</td></tr>';
     updStat();
     return;
   }
 
   list.innerHTML = curItems.map((k, i) => k.dir
     ? `<tr class="dir" data-i="${i}"><td>📁 <span class="nm" data-act="open" data-gopath="${escAttr(k.path)}">${escAttr(k.name)}/</span></td>
-         <td class="hide-m dim">папка</td>
-         <td class="hide-m"><span class="tag" data-role="sub">${k.childCount == null ? '…' : k.childCount + ' об.'}</span></td>
-         <td><button class="sec" style="padding:4px 10px" data-act="del" title="Удалить пустую папку">🗑</button></td></tr>`
+         <td class="hide-m meta">папка</td>
+         <td class="hide-m meta"><span class="tag" data-role="sub">${k.childCount == null ? '…' : k.childCount + ' об.'}</span></td>
+         <td class="act"><button class="icB" data-act="del" title="Удалить пустую папку">🗑</button></td></tr>`
     : `<tr data-i="${i}"><td>📄 <span class="name">${escAttr(k.name)}</span></td>
-         <td class="hide-m dim" data-role="size">${fmt(k.size)}</td>
-         <td class="hide-m"><button class="sec" style="padding:4px 10px" data-act="info">ⓘ</button></td>
-         <td><button class="sec" style="padding:4px 10px" data-act="dl">⬇ Скач.</button> <button class="sec" style="padding:4px 10px" data-act="del" title="Удалить">🗑</button></td></tr>`
+         <td class="hide-m meta" data-role="size">${fmt(k.size)}</td>
+         <td class="hide-m meta"><button class="icB" data-act="info" title="Инфо">ⓘ</button></td>
+         <td class="act"><button class="dlB" data-act="dl">⬇ Скач.</button> <button class="icB" data-act="del" title="Удалить">🗑</button></td></tr>`
   ).join('');
 
   [...list.querySelectorAll('tr')].forEach(tr => {
@@ -227,8 +368,9 @@ function updStat() {
     else if (k.size == null) pending++;
     else { files++; bytes += k.size; }
   }
-  document.getElementById('stat').textContent =
-    `${files} файл. (${fmt(bytes)}) · ${dirs} пап.` + (pending ? ` · размеры ${pending}…` : '');
+  const line = `${files} файл. (${fmt(bytes)}) · ${dirs} пап.` + (pending ? ` · размеры ${pending}…` : '');
+  document.getElementById('stat').textContent = line;
+  document.getElementById('statTop').textContent = line;
 }
 
 function go(p) {
@@ -236,19 +378,22 @@ function go(p) {
     curPath = '/';
     curItems = rootData;
     render();
-    if (!rootComplete) fillSizes(++loadToken, '/');   // домергиваить оставшиеся размеры
+    hPush('/');                                       // пришли сюда — запишем в историю
+    if (!rootComplete) fillSizes(++loadToken, '/');   // доматывать оставшиеся размеры
     return;
   }
-  loadDir(p);
+  loadDir(p, true);
 }
 
 function changeCard(v) {
   card = parseInt(v);
   rootData = null; rootComplete = false;
+  hstack.length = 0; hpos = -1;      // у каждой карты своя история
+  renderCardBox();
   go('/');
 }
 
-function refresh() { loadDir(curPath || '/'); }
+function refresh() { loadDir(curPath || '/', false); }   // перезагрузка не путает историю
 
 function setBar(pct, text) {
   document.getElementById('bar').firstChild.style.width = (pct ? pct : 0) + '%';
